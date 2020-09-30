@@ -45,3 +45,7 @@ ibmcloud fn action invoke choirless/backup --result --param-file opts.json
 ```
 
 where `opts.json` contains the Cloudant and COS config in JSON format.
+
+## Running backup periodically
+
+to do
