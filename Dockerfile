@@ -1,1 +1,1 @@
-FROM glynnbird/choirless_backup:latest
+FROM choirless/backup:latest

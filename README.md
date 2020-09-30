@@ -36,7 +36,7 @@ Then we can create an IBM Cloud Function based on this custom image
 ibmcloud fn action update choirless/backup --docker glynnbird/choirless_backup:latest index.js
 ```
 
-## Running in Cloud Functions
+## Running in IBM Cloud Functions
 
 A one-off invocation of the backup can set off from the command-line:
 
@@ -46,6 +46,33 @@ ibmcloud fn action invoke choirless/backup --result --param-file opts.json
 
 where `opts.json` contains the Cloudant and COS config in JSON format.
 
+If we put everything but the `CLOUDANT_DB` parameter into our `opts.json`, we can simply pass `CLOUDANT_DB` in at invocation-time.
+
+opts.json
+```js
+{"CLOUDANT_IAM_KEY":"abc123","CLOUDANT_URL":"https://myservice.cloudantnosqldb.appdomain.cloud","COS_API_KEY":"xyz456","COS_ENDPOINT":"s3.private.eu-gb.cloud-object-storage.appdomain.cloud","COS_SERVICE_INSTANCE_ID":"crn:v:w:x:y:z::","COS_BUCKET":"mybucket"}
+```
+
+Bind the config to the action so we don't have to pass it in every time:
+
+```sh
+ibmcloud fn action update choirless/backup --param-file opts.json
+```
+
+Then invoke passing only the database name to backup:
+
+```sh
+ibmcloud fn action invoke choirless/backup --result --param CLOUDANT_DB mydb
+```
+
 ## Running backup periodically
 
-to do
+We can then tell IBM Cloud Functions to run our action once every 24 hours (say) for each database we need to backup:
+
+```sh
+ibmcloud fn trigger create dataBackupTrigger \ 
+         --feed /whisk.system/alarms/alarm \
+         --param cron "5 0 * * *" \
+         --param trigger_payload "{\"CLOUDANT_DB\":\"data\"}" 
+ibmcloud fn rule create dataBackupRule dataBackupTrigger choirless/backup
+```
