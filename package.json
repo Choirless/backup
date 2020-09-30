@@ -1,0 +1,30 @@
+{
+  "name": "backup",
+  "version": "1.0.0",
+  "description": "Choirless Cloudant backup script",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard",
+    "standard": "standard --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Choirless/backup.git"
+  },
+  "keywords": [
+    "backup"
+  ],
+  "author": "Glynn Bird <glynn.bird@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Choirless/backup/issues"
+  },
+  "homepage": "https://github.com/Choirless/backup#readme",
+  "dependencies": {
+    "@cloudant/couchbackup": "^2.6.0",
+    "ibm-cos-sdk": "^1.7.0"
+  },
+  "devDependencies": {
+    "standard": "^14.3.4"
+  }
+}
