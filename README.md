@@ -70,9 +70,35 @@ ibmcloud fn action invoke choirless/backup --result --param CLOUDANT_DB mydb
 We can then tell IBM Cloud Functions to run our action once every 24 hours (say) for each database we need to backup:
 
 ```sh
-ibmcloud fn trigger create dataBackupTrigger \ 
-         --feed /whisk.system/alarms/alarm \
-         --param cron "5 0 * * *" \
-         --param trigger_payload "{\"CLOUDANT_DB\":\"data\"}" 
+# backup each database at midnight
+# data database
+ibmcloud fn trigger create dataBackupTrigger --feed /whisk.system/alarms/alarm --param cron "5 0 * * *" --param trigger_payload "{\"CLOUDANT_DB\":\"data\"}" 
 ibmcloud fn rule create dataBackupRule dataBackupTrigger choirless/backup
+# invitations database
+ibmcloud fn trigger create invitationsBackupTrigger --feed /whisk.system/alarms/alarm --param cron "10 0 * * *" --param trigger_payload "{\"CLOUDANT_DB\":\"invitations\"}" 
+ibmcloud fn rule create invitationsBackupRule invitationsBackupTrigger choirless/backup
+# keys database
+ibmcloud fn trigger create keysBackupTrigger --feed /whisk.system/alarms/alarm --param cron "15 0 * * *" --param trigger_payload "{\"CLOUDANT_DB\":\"keys\"}" 
+ibmcloud fn rule create keysBackupRule keysBackupTrigger choirless/backup
+# render_status database
+ibmcloud fn trigger create renderstatusBackupTrigger --feed /whisk.system/alarms/alarm --param cron "20 0 * * *" --param trigger_payload "{\"CLOUDANT_DB\":\"render_status\"}" 
+ibmcloud fn rule create renderstatusBackupRule renderstatusBackupTrigger choirless/backup
+# users database
+ibmcloud fn trigger create usersBackupTrigger --feed /whisk.system/alarms/alarm --param cron "25 0 * * *" --param trigger_payload "{\"CLOUDANT_DB\":\"users\"}" 
+ibmcloud fn rule create usersBackupRule usersBackupTrigger choirless/backup
+```
+
+## Using a Makefile
+
+If you have have an `opts.json` containing the parameters:
+
+```js
+{"CLOUDANT_IAM_KEY":"abc123","CLOUDANT_URL":"https://myservice.cloudantnosqldb.appdomain.cloud","COS_API_KEY":"xyz456","COS_ENDPOINT":"s3.private.eu-gb.cloud-object-storage.appdomain.cloud","COS_SERVICE_INSTANCE_ID":"crn:v:w:x:y:z::","COS_BUCKET":"mybucket"}
+```
+
+You can use the provided Makefile to create the IBM Cloud Functions actions, triggers and rules in sequence:
+
+```sh
+make namespace
+make build
 ```
